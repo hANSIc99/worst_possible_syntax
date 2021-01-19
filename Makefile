@@ -5,15 +5,24 @@
 # -s make stripped libray
 
 # uncomment the last part in line 9 to compile with debug symbold 
+#-Wall
+CFLAGS = -Werror -g 
 
-CFLAGS =-Wall -Werror -std=c++11 #-g 
 
+all: function_pointer method_pointer
+	
 
-all: function_pointer.o
-	c++ -o function_pointer function_pointer.o $(CFLAGS)
+function_pointer: function_pointer.o
+	gcc -o function_pointer function_pointer.o $(CFLAGS)
 
 function_pointer.o: function_pointer.c
-	 c++ -c function_pointer.c $(CFLAGS)
+	 gcc -c function_pointer.c $(CFLAGS)
+
+method_pointer: method_pointer.o
+	c++ -o method_pointer method_pointer.o $(CFLAGS)
+
+method_pointer.o: method_pointer.cpp
+	c++ -c method_pointer.cpp $(CFLAGS)
 
 .PHONY: clean
 clean:
