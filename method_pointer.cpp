@@ -5,8 +5,8 @@
 
 template<typename T>
 struct DelayedInitCommand {
-    void            (T::*init)();
-    unsigned int    ticks;
+    void            (T::*init)();   // Pointer to (delayed) initialization method
+    unsigned int    ticks;          // Number of ticks after init() is called
 };
 
 class Frontend
@@ -20,9 +20,9 @@ public:
         init2 = { &Frontend::delayedInit2, 10};
         init3 = { &Frontend::delayedInit3, 15};
         
-        m_delayedInitit.push_back(init1);
-        m_delayedInitit.push_back(init2);
-        m_delayedInitit.push_back(init3);
+        m_delayedInit.push_back(init1);
+        m_delayedInit.push_back(init2);
+        m_delayedInit.push_back(init3);
     }
 
     unsigned int m_ticks{0};
@@ -33,16 +33,16 @@ public:
 
         /* Check for delayed initializations */
 
-        std::vector<DelayedInitCommand<Frontend>>::iterator it = m_delayedInitit.begin();
+        std::vector<DelayedInitCommand<Frontend>>::iterator it = m_delayedInit.begin();
 
-        while (it != m_delayedInitit.end()){
+        while (it != m_delayedInit.end()){
 
             if (it->ticks < m_ticks){
 
                 if(it->init)
                     ((*this).*(it->init))();
 
-                it = m_delayedInitit.erase(it);
+                it = m_delayedInit.erase(it);
 
             } else {
                 it++;
@@ -66,7 +66,7 @@ private:
 
     unsigned int m_initCnt{0};
     
-    std::vector<DelayedInitCommand<Frontend> > m_delayedInitit;
+    std::vector<DelayedInitCommand<Frontend> > m_delayedInit;
 };
 
 
