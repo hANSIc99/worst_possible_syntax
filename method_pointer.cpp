@@ -4,7 +4,7 @@
 #include <thread>
 
 template<typename T>
-struct DelayedInitCommand {
+struct DynamicInitCommand {
     void            (T::*init)();   // Pointer to (delayed) initialization method
     unsigned int    ticks;          // Number of ticks after init() is called
 };
@@ -14,15 +14,15 @@ class Frontend
 public:
     Frontend(){
 
-        DelayedInitCommand<Frontend> init1, init2, init3;
+        DynamicInitCommand<Frontend> init1, init2, init3;
 
-        init1 = { &Frontend::delayedInit1, 5};
-        init2 = { &Frontend::delayedInit2, 10};
-        init3 = { &Frontend::delayedInit3, 15};
+        init1 = { &Frontend::dynamicInit1, 5};
+        init2 = { &Frontend::dynamicInit2, 10};
+        init3 = { &Frontend::dynamicInit3, 15};
         
-        m_delayedInit.push_back(init1);
-        m_delayedInit.push_back(init2);
-        m_delayedInit.push_back(init3);
+        m_dynamicInit.push_back(init1);
+        m_dynamicInit.push_back(init2);
+        m_dynamicInit.push_back(init3);
     }
 
     unsigned int m_ticks{0};
@@ -33,16 +33,16 @@ public:
 
         /* Check for delayed initializations */
 
-        std::vector<DelayedInitCommand<Frontend>>::iterator it = m_delayedInit.begin();
+        std::vector<DynamicInitCommand<Frontend>>::iterator it = m_dynamicInit.begin();
 
-        while (it != m_delayedInit.end()){
+        while (it != m_dynamicInit.end()){
 
             if (it->ticks < m_ticks){
 
                 if(it->init)
                     ((*this).*(it->init))();
 
-                it = m_delayedInit.erase(it);
+                it = m_dynamicInit.erase(it);
 
             } else {
                 it++;
@@ -52,21 +52,21 @@ public:
 
 private:
 
-    void delayedInit1(){
-        std::cout << "delayedInit1 called" << std::endl;
+    void dynamicInit1(){
+        std::cout << "dynamicInit1 called" << std::endl;
     }
     
-    void delayedInit2(){
-        std::cout << "delayedInit2 called" << std::endl;
+    void dynamicInit2(){
+        std::cout << "dynamicInit2 called" << std::endl;
     }
 
-    void delayedInit3(){
-        std::cout << "delayedInit3 called" << std::endl;
+    void dynamicInit3(){
+        std::cout << "dynamicInit3 called" << std::endl;
     }
 
     unsigned int m_initCnt{0};
     
-    std::vector<DelayedInitCommand<Frontend> > m_delayedInit;
+    std::vector<DynamicInitCommand<Frontend> > m_dynamicInit;
 };
 
 
@@ -125,6 +125,9 @@ int main(int argc, char* argv[]){
     while(frontendInstance.m_ticks < 20){
         frontendInstance.tick();
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    }
+    while(true){
+        
     }
 
 }
